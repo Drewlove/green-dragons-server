@@ -1,7 +1,11 @@
+-- CHANGE age should be birth date, then calculate age based on birth date
+
+DROP TABLE IF EXISTS users;
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'community') THEN
-        CREATE TYPE community AS ENUM ('Grodojo', 'D. Root', 'Public');
+        CREATE TYPE community AS ENUM ('Grodojo', 'Dragon Root', 'Public');
     END IF;
 END
 $$; 

@@ -24,8 +24,11 @@ app.use(validateBearerToken)
 //ENV SET UP router and URL
 const users_router = require('./users/router')
 const challenges_router=require('./challenges/router')
+const all_badges_router = require('./all_badges/router')
+
 app.use('/api/users/', users_router)
 app.use('/api/challenges/', challenges_router)
+app.use('/api/all_badges', all_badges_router)
 
 app.use(errorHandler)
 

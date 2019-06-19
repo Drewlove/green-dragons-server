@@ -5,11 +5,9 @@ const logger = require('../logger')
 const Service = require('./service')
 
 //ENV SET UP table and array properties
-//ISSUE: issues if some properties are mandatory, and others are optional?
-const table = 'challenges'
-const properties = ['pic_url', 'community_type',
-'challenge_name', 'challenge_description']
-
+const table = 'all_badges'
+const properties = ['pillar_id', 'badge_name', 'pic_url', 'star_rating', 
+'badge_description', 'passing_num', 'number_description']
 
 const router = express.Router()
 const bodyParser = express.json()
@@ -17,13 +15,13 @@ const bodyParser = express.json()
 //ENV SET UP properties and values
 const serializeItem = item => ({
     id: item.id, 
+    pillar_id: item.pillar, 
+    badge_name: xss(item.badge_name), 
     pic_url: xss(item.pic_url), 
-    community_type: xss(item.community_type), 
-    challenge_name: xss(item.challenge_name), 
-    challenge_description: xss(item.challenge_description), 
-    number_type: xss(item.number_type), 
-    number_to_pass: xss(item.number_to_pass), 
-    dragon_bucks: item.dragon_bucks
+    star_rating: xss(item.star_rating), 
+    badge_description: xss(item.badge_description), 
+    passing_num: xss(item.passing_num), 
+    number_description: xss(item.number_description)
 })
 
 router
@@ -123,7 +121,7 @@ router
 
     const numberOfValues = Object.values(updatedItem).filter(Boolean).length
     if (numberOfValues === 0) {
-      logger.error(`Invalid update without required fields ${numberOfValues}`)
+      logger.error(`Invalid update without required fields`)
       return res.status(400).json({
         error: {
           message: `Request body must contain either ${properties}`
