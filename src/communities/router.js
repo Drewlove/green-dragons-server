@@ -6,9 +6,8 @@ const Service = require('./service')
 
 //ENV SET UP table and array properties
 //ISSUE: issues if some properties are mandatory, and others are optional?
-const table = 'challenges'
-const properties = ['pic_url', 'community_type',
-'challenge_name', 'challenge_description', 'dragon_bucks']
+const table = 'communities'
+const properties = ['community_type']
 
 
 const router = express.Router()
@@ -17,13 +16,7 @@ const bodyParser = express.json()
 //ENV SET UP properties and values
 const serializeItem = item => ({
     id: item.id, 
-    pic_url: xss(item.pic_url), 
     community_type: xss(item.community_type), 
-    challenge_name: xss(item.challenge_name), 
-    challenge_description: xss(item.challenge_description), 
-    number_type: xss(item.number_type), 
-    number_to_pass: xss(item.number_to_pass), 
-    dragon_bucks: item.dragon_bucks
 })
 
 router

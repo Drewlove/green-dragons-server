@@ -1,9 +1,3 @@
-/*
-FEATURES
-*Admin, viewing all students, should be able to sort by: 
-level, age, dragon bucks, alphabetical
-*/
-
 require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
@@ -22,10 +16,12 @@ app.use(helmet())
 app.use(validateBearerToken)
 
 //ENV SET UP router and URL
+const communities_router = require('./communities/router')
 const users_router = require('./users/router')
 const challenges_router=require('./challenges/router')
 const all_badges_router = require('./all_badges/router')
 
+app.use('/api/communities', communities_router)
 app.use('/api/users/', users_router)
 app.use('/api/challenges/', challenges_router)
 app.use('/api/all_badges', all_badges_router)
