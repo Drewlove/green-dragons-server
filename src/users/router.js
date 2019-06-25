@@ -7,7 +7,7 @@ const Service = require('./service')
 //ENV SET UP table and array properties
 const table = 'users'
 const properties = ['first_name', 'last_name', 'pic_url',
-'dragon_level', 'dragon_bucks', 'age']
+'dragon_bucks', 'age']
 
 
 const router = express.Router()
@@ -27,22 +27,6 @@ const serializeItem= item => ({
 router
   .route('/')
   
-  .get((req, res, next) => {
-    Service.getAll(req.app.get('db'))
-      .then(item => {
-        res.json(item.map(serializeItem))
-      })
-      .catch(next)
-  })
-
-  .get((req, res, next) => {
-    Service.getAll(req.app.get('db'))
-      .then(item => {
-        res.json(item.map(serializeItem))
-      })
-      .catch(next)
-  })
-
   .get((req, res, next) => {
     Service.getAll(req.app.get('db'))
       .then(item => {

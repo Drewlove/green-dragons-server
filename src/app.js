@@ -16,16 +16,26 @@ app.use(helmet())
 app.use(validateBearerToken)
 
 //ENV SET UP router and URL
-const communities_router = require('./communities/router')
-const users_router = require('./users/router')
-const challenges_router=require('./challenges/router')
-const all_badges_router = require('./all_badges/router')
+const user_challenge_entries_router = require('./user_challenge_entries/router')
+const dry_router = require('./dry/router')
 
-app.use('/api/communities', communities_router)
-app.use('/api/users/', users_router)
-app.use('/api/challenges/', challenges_router)
-app.use('/api/all_badges', all_badges_router)
+app.use('/api/', dry_router)
+app.use('/api/user_challenge_entries/', user_challenge_entries_router)
+
 
 app.use(errorHandler)
 
 module.exports = app
+
+//try CRUD for users
+//add user, edit user, delete user
+
+//THEN, work with viewing user challenges,
+//fetch the right table with the call below
+// THIS IS THE QUERY THAT RUNS WHEN USER VIEWS ALL CHALLENGES OF
+// A SPECIFIC STUDENT
+
+// SELECT * FROM challenges 
+// INNER JOIN user_challenge_entries ON 
+// (challenges.id = user_challenge_entries.challenge_id)
+// WHERE user_challenge_entries.users_id = 1;

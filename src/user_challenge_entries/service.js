@@ -1,9 +1,9 @@
 //ENV SET UP, change table name
-const table = 'communities'
+const table = 'user_challenge_entries'
 
 const Service = {
-  getAll(knex) {
-    return knex.select('*').from(table)
+  getAllUsersChallenges(knex, users_id) {
+    return knex.select('*').from(table).where('users_id', users_id)
   },
   getById(knex, id) {
     return knex.from(table).select('*').where('id', id).first()

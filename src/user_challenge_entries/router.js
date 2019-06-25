@@ -5,9 +5,9 @@ const logger = require('../logger')
 const Service = require('./service')
 
 //ENV SET UP table and array properties
-const table = 'all_badges'
-const properties = ['pillar_id', 'badge_name', 'pic_url', 'star_rating', 
-'badge_description', 'passing_num', 'number_description']
+//ISSUE: issues if some properties are mandatory, and others are optional?
+const table = 'user_challenge_entries'
+const properties = ['pass', 'score', 'notes']
 
 const router = express.Router()
 const bodyParser = express.json()
@@ -15,37 +15,22 @@ const bodyParser = express.json()
 //ENV SET UP properties and values
 const serializeItem = item => ({
     id: item.id, 
-    pillar_id: item.pillar, 
-    badge_name: xss(item.badge_name), 
-    pic_url: xss(item.pic_url), 
-    star_rating: xss(item.star_rating), 
-    badge_description: xss(item.badge_description), 
-    passing_num: xss(item.passing_num), 
-    number_description: xss(item.number_description)
+    challenge_id: item.challenge_id, 
+    users_id: item.users_id, 
+    pass: item.pass, 
+    score: item.score, 
+    notes: xss(item.notes)
 })
 
+//better way to name this? 
 router
-  .route('/')
+  .route('/all-entries/:users_id')
   
   .get((req, res, next) => {
-    Service.getAll(req.app.get('db'))
+      const {users_id} = req.params
+    Service.getAllUsersChallenges(req.app.get('db'), users_id)
       .then(item => {
-        res.json(item.map(serializeItem))
-      })
-      .catch(next)
-  })
-
-  .get((req, res, next) => {
-    Service.getAll(req.app.get('db'))
-      .then(item => {
-        res.json(item.map(serializeItem))
-      })
-      .catch(next)
-  })
-
-  .get((req, res, next) => {
-    Service.getAll(req.app.get('db'))
-      .then(item => {
+          logger.info(`the params ${req.params}`)
         res.json(item.map(serializeItem))
       })
       .catch(next)
@@ -163,3 +148,8 @@ router
   })
 
 module.exports = router
+
+
+
+
+

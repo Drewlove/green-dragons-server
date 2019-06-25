@@ -7,7 +7,7 @@ const Service = require('./service')
 //ENV SET UP table and array properties
 //ISSUE: issues if some properties are mandatory, and others are optional?
 const table = 'challenges'
-const properties = ['pic_url', 'community_type',
+const properties = ['pic_url',
 'challenge_name', 'challenge_description', 'dragon_bucks']
 
 
@@ -37,21 +37,6 @@ router
       .catch(next)
   })
 
-  .get((req, res, next) => {
-    Service.getAll(req.app.get('db'))
-      .then(item => {
-        res.json(item.map(serializeItem))
-      })
-      .catch(next)
-  })
-
-  .get((req, res, next) => {
-    Service.getAll(req.app.get('db'))
-      .then(item => {
-        res.json(item.map(serializeItem))
-      })
-      .catch(next)
-  })
 
 router
   .route('/add')
