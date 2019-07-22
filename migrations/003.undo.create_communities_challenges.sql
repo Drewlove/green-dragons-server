@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS challenges_communities; 

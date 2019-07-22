@@ -8,163 +8,242 @@ const Service = require('./service')
 const router = express.Router()
 const bodyParser = express.json()
 
-//ENV SET UP properties and values
-const serializeItemChallenges = item => ({
-    id: item.id, 
-    pic_url: xss(item.pic_url), 
-    community_type: xss(item.community_type), 
-    challenge_name: xss(item.challenge_name), 
-    challenge_description: xss(item.challenge_description), 
-    number_type: xss(item.number_type), 
-    number_to_pass: xss(item.number_to_pass), 
-    dragon_bucks: item.dragon_bucks
-})
+const properties = {
+  challenges: ['pic_url', 'challenges_name', 'challenge_description', 'dragon_bucks'],
+  users: ['first_name', 'last_name', 'pic_url', 'age'],
+  communities: ['community_name']
+} 
 
-const serializeItemUsers= item => ({
-  id: item.id,
-  first_name: xss(item.first_name),
-  last_name: xss(item.last_name),
-  pic_url: xss(item.pic_url), 
-  dragon_level: xss(item.dragon_level), 
-  dragon_bucks: xss(item.dragon_bucks), 
-  age: xss( item.age)
-})
-
-let serializeItem;
-let properties; 
-
-const propertiesChallenges = ['pic_url', 'challenge_name', 'challenge_description', 'dragon_bucks']
-const propertiesUsers = ['first_name', 'last_name', 'pic_url', 'dragon_bucks', 'age']
-
-function setSerializeAndProperties(table){
-  switch (table) {
-    case 'challenges':
-      serializeItem = serializeItemChallenges
-      properties = propertiesChallenges
-      break;
-    case 'users':
-      serializeItem = serializeItemUsers
-      properties = propertiesUsers
-      break;
-    default:
-      text = "No value found";
-  }
+function formatJoinStatement(joinStatement){
+  return joinStatement.split('+').join(' ').replace(/STARTPARENS/g, '(').replace(/ENDPARENS/g, ')')
 }
 
+function formatWhereStatement(whereStatement){
+  return whereStatement.split('+').join(' ').replace('equals', '=')
+}
+
+function formatRawQuery(rawQuery){
+  return rawQuery.split('&').join(' ')
+    .replace(/ID/g, '??')
+    .replace(/VALUE/g, '?')
+}
+
+function formatRawBindings(rawBindings){
+  return rawBindings
+  .replace(/OPEN/gi, '(')
+  .replace(/CLOSE/g, ')') 
+  .split('&')
+}
+
+function sanitizeObj(obj){
+  let sanitizedObj = {}
+  Object.keys(obj).map(key => {
+    sanitizedObj[key] = obj[key]
+  })
+  return sanitizedObj
+}
+
+router
+.route('/dynamicGet/:rawQuery/:rawBindings')
+.get((req, res, next)=> {
+  const {rawQuery, rawBindings} = req.params
+  const query = formatRawQuery(rawQuery)
+  const bindings = formatRawBindings(rawBindings)
+  Service.dynamicGet(req.app.get('db'), query, bindings)
+  .then(selectObj => {
+    const sanitizedRows = selectObj.rows.map(rowObj => {
+        return sanitizeObj(rowObj)
+      })
+      res.json(sanitizedRows)
+  })
+  .catch(next)
+})
 
 router
   .route('/:table')
   .get((req, res, next) => {
     const {table} = req.params
-    Service.getAll(req.app.get('db'), table)
-      .then(item => {
-        setSerializeAndProperties(table)
-        res.json(item.map(serializeItem))
+    Service.getAll(req.app.get('db'), table) 
+    .then(allRows => {
+      const sanitizedRows = allRows.map(rowObj => {
+        return sanitizeObj(rowObj)
       })
-      .catch(next)
+      res.json(sanitizedRows)
+    })
+    .catch(next)
+  })
+
+  router
+  .route('/:fromTable/getAllJoinOneTable/:joinStatement')
+  .get((req, res, next)=> {
+    const {fromTable, joinStatement} = req.params
+    const formattedJoinStatement = formatJoinStatement(joinStatement)
+    Service.getAllJoinOneTable(req.app.get('db'), fromTable, formattedJoinStatement)
+    .then(allRows => {
+      const sanitizedRows = allRows.map(rowObj => {
+        return sanitizeObj(rowObj)
+      })
+      res.json(sanitizedRows)
+    })
+    .catch(next)
+  })
+
+  router
+  .route('/:fromTable/getAllJoinTwoTables/:joinStatementOne/:joinStatementTwo/')
+  .get((req, res, next)=> {
+    const {fromTable, joinStatementOne, joinStatementTwo } = req.params
+    const formattedJoinStatementOne = formatJoinStatement(joinStatementOne)
+    const formattedJoinStatementTwo = formatJoinStatement(joinStatementTwo)
+    Service.getAllJoinTwoTables(req.app.get('db'), fromTable, formattedJoinStatementOne, formattedJoinStatementTwo)
+    .then(allRows => {
+      const sanitizedRows = allRows.map(rowObj => {
+        return sanitizeObj(rowObj)
+      })
+      res.json(sanitizedRows)
+    })
+    .catch(next)
+  })
+
+  router
+  .route('/:fromTable/getAllJoinTwoTablesById/:joinStatementOne/:joinStatementTwo/:whereStatement')
+  .get((req, res, next)=> {
+    const {fromTable, joinStatementOne, joinStatementTwo, whereStatement} = req.params
+    const formattedJoinStatementOne = formatJoinStatement(joinStatementOne)
+    const formattedJoinStatementTwo = formatJoinStatement(joinStatementTwo)
+    const formattedWhereStatement = formatWhereStatement(whereStatement)
+    Service.getAllJoinTwoTablesById(req.app.get('db'), fromTable, formattedJoinStatementOne, formattedJoinStatementTwo, formattedWhereStatement)
+    .then(allRows => {
+      const sanitizedRows = allRows.map(rowObj => {
+        return sanitizeObj(rowObj)
+      })
+      res.json(sanitizedRows)
+    })
+    .catch(next)
+  })
+
+
+
+  router
+  .route('/:table/getItemTemplate')
+  .get((req, res, next) => {
+    const {table} = req.params
+    Service.getItemTemplate(req.app.get('db'), table)
+    .then(columnNamesArrOfObjs => {
+      let emptyItemObj = [{}]
+      columnNamesArrOfObjs.map(key => {
+        emptyItemObj[0][key.column_name] = ''
+      })
+      res.json(emptyItemObj)
+    })
+    .catch(next)
   })
 
 
   router
-  .route('/:table/add')
+  .route('/:table/POST')
   .post(bodyParser, (req, res, next) => {
-    const entries = Object.entries(req.body)
     const {table} = req.params
-    setSerializeAndProperties(table)
-    let newItem = {}
-    entries.map(entry => {
-      if(entry[0] === "id"){
+    logger.info('posting')
+    
+    let newRow = {}
+    Object.keys(req.body).map(key => {
+      if(req.body[key] === 'id'){
         return 
       } else {
-        newItem[entry[0]] = entry[1]
+        return newRow[key] = req.body[key]
       }
     })
 
-    for (const field of properties) {
-      if (!newItem[field]) {
-        logger.error(`${field} is required`)
+    for (const field of properties[table]) {
+      if (!newRow[field]) {
+        logger.error(`Method: POST, Status: Invalid. Error Description: For table: '${table}' '${field}' is required`)
         return res.status(400).send({
-          error: { message: `'${field}' is required` }
+          error: { message: `For table: '${table}' '${field}' is required` }
         })
       }
     }
+    
+    logger.info(`New row for table ${table}: ${Object.entries(newRow)}`)
 
-    Service.insertItem(
+    Service.insertRow(
       req.app.get('db'),
       table,
-      newItem
+      newRow
     )
-      .then(item => {
-        //setSerializeAndProperties(table)
-        logger.info(`Table ${table}: Item with id ${item.id} created.`)
+      .then(row => {
+        logger.info(`Method: POST, Status: Valid, Update: Table '${table}': Row with id '${row.id}' created.`)
         res
           .status(201)
-          .location(path.posix.join(req.originalUrl, `${item.id}`))
-          .json(serializeItem(item))
+          .location(path.posix.join(req.originalUrl, `${row.id}`))
+          .json(sanitizeObj(row))
       })
       .catch(next)
   })   
  
 router
-  .route('/:table/:item_id')
+  .route('/:table/:serviceMethod/:row_id')
 
   .all((req, res, next) => {
     const {table} = req.params
-    const { item_id } = req.params
-    setSerializeAndProperties(table)
-    Service.getById(req.app.get('db'), table, item_id)
-      .then(item => {
-        if (!item) {
-          logger.error(`Table ${table} with id ${item_id} not found.`)
+    const { row_id } = req.params
+    Service.getById(req.app.get('db'), table, row_id)
+      .then(row => {
+        if (!row) {
+          logger.error(`Method: ALL, Status: Invalid, 
+          Error Description: Table '${table}' with id '${row_id}' not found.`)
           return res.status(404).json({
-            error: { message: `Table ${table}: Item Not Found` }
+            error: { message: `Table ${table}: Row Not Found` }
           })
         }
-        res.item = item
+        res.row = row
         next()
       })
       .catch(next)
-
   })
 
   .get((req, res) => {
-    res.json(serializeItem(res.item))
+    res.json(sanitizeObj(res.row))
   })
 
   .delete((req, res, next) => {
-    const {item_id } = req.params
+    const {row_id } = req.params
     const {table} = req.params
-    Service.deleteItem( 
+    Service.deleteRow( 
       req.app.get('db'),
       table, 
-      item_id
+      row_id
     )
       .then(numRowsAffected => {
-        logger.info(`Table ${table}: with id ${item_id} deleted.`)
+        logger.info(`Method: DELETE, Status: Valid, 
+        Update: Table '${table}': with id '${row_id}' deleted.`)
         res.status(204).end()
       })
       .catch(next)
   })
 
   .patch(bodyParser, (req, res, next) => {
-    let updatedFields = {}
     const {table} = req.params
-    Object.entries(req.body).map(entry => {
-      updatedFields[entry[0]] = entry[1]
+    let updatedRow = {}
+    Object.keys(req.body).map(key => {
+      if(properties[table].indexOf(key) !== -1){
+        updatedRow[key] = req.body[key]
+      }
     })
 
-    let updatedItem = {}
-    properties.forEach(prop => {
-      updatedItem[prop] = updatedFields[prop]
+    let keysMissingValues = []; 
+    Object.keys(updatedRow).map(key => {
+      if(updatedRow[key] === ''){
+        keysMissingValues.push(key)
+      }
     })
 
 
-    const numberOfValues = Object.values(updatedItem).filter(Boolean).length
-    if (numberOfValues === 0) {
-      logger.error(`Invalid update without required fields ${numberOfValues}`)
+    if (keysMissingValues.length > 0) {
+      logger.error(`Method: PATCH, Status: Invalid, 
+      Error Description: table: '${table}', missing values for: ${keysMissingValues}`)
       return res.status(400).json({
         error: {
-          message: `Request body must contain either ${properties}`
+          message: `Request body must contain either ${properties[table]}`
         }
       })
     }
@@ -173,11 +252,11 @@ router
 
     // if (error) return res.status(400).send(error)
 
-    Service.updateItem(
+    Service.updateRow(
       req.app.get('db'),
       table, 
-      req.params.item_id,
-      updatedItem
+      req.params.row_id,
+      updatedRow
     )
       .then(numRowsAffected => {
         res.status(204).end()

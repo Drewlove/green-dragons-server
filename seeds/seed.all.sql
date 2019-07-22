@@ -1,9 +1,11 @@
 BEGIN; 
-\i /Users/Drew/Projects/A1-Review/fullstack-server/seeds/001.challenges/seed.challenges.sql
-\i /Users/Drew/Projects/A1-Review/fullstack-server/seeds/002.users/seed.users.sql
-\i /Users/Drew/Projects/A1-Review/fullstack-server/seeds/003.user_challenge_entries/seed.user_challenge_entries.sql
+\i /Users/Drew/Projects/A1-Review/capstone-server/seeds/001.seed.communities.sql
+\i /Users/Drew/Projects/A1-Review/capstone-server/seeds/002.seed.challenges.sql
+\i /Users/Drew/Projects/A1-Review/capstone-server/seeds/003.seed.challenges_communities.sql
+\i /Users/Drew/Projects/A1-Review/capstone-server/seeds/004.seed.users.sql
+\i /Users/Drew/Projects/A1-Review/capstone-server/seeds/005.seed.user_challenges.sql
 
 COMMIT; 
 
 -- SEED ALL
--- psql -f ~/Projects/A1-Review/fullstack-server/seeds/seed.all.sql fullstack-server 
+-- psql -f ~/Projects/A1-Review/capstone-server/seeds/seed.all.sql green_dragons;

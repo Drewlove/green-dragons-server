@@ -1,30 +1,54 @@
-//ENV SET UP, change table name
+//Refactor, getAll and join could be dried up, lots of repetitive code
 
-const Service = {
-  getAll(knex, table) {
-    return knex.select('*').from(table)
+const Service = { 
+  dynamicGet(knex, query, bindings){
+    return knex.raw(query, bindings)
   },
   getById(knex, table, id) {
-    return knex.from(table).select('*').where('id', id).first()
+    return knex.from(table).select('*').where(`${table}_id`, id).first()
   },
-  insertItem(knex, table, newItem) {
+  getItemTemplate(knex, table){
+    return knex.select('column_name')
+    .from('information_schema.columns')
+    .where('table_name', table)
+  },
+  getAll(knex, table) {
+    return knex.select('*').from(table)
+  }, 
+  getAllJoinOneTable(knex, fromTable, joinStatement ){
+    return knex.select('*')
+    .from(fromTable)
+    .joinRaw(joinStatement)
+  },  
+  getAllJoinTwoTables(knex, fromTable, joinStatementOne, joinStatementTwo){
+    return knex.from(fromTable)
+    .joinRaw(joinStatementOne)
+    .joinRaw(joinStatementTwo)
+  },
+    getAllJoinTwoTablesById(knex, fromTable, joinStatementOne, joinStatementTwo, whereStatement){
+    return knex.from(fromTable)
+    .joinRaw(joinStatementOne)
+    .joinRaw(joinStatementTwo)
+    .whereRaw(whereStatement)
+  },
+  insertRow(knex, table, newRow) {
     return knex
-      .insert(newItem)
+      .insert(newRow)
       .into(table)
       .returning('*')
       .then(rows => {
         return rows[0]
       })
   },
-  deleteItem(knex, table, id) {
+  deleteRow(knex, table, id) {
     return knex
     .from(table)
-    .where({ id })
+    .where(`${table}_id`, id)
     .delete()
   },
-  updateItem(knex, table, id, newFields) {
+  updateRow(knex, table, id, newFields) {
     return knex(table)
-    .where({ id })
+    .where(`${table}_id`, id)
     .update(newFields)
   },
 }
