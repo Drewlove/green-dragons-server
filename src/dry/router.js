@@ -9,9 +9,9 @@ const router = express.Router()
 const bodyParser = express.json()
 
 const properties = {
-  challenges: ['pic_url', 'challenges_name', 'challenge_description', 'dragon_bucks'],
+  communities: ['community_name'],
+  challenges: ['challenges_name', 'challenges_description', 'pic_url', 'units'],
   users: ['first_name', 'last_name', 'pic_url', 'age'],
-  communities: ['community_name']
 } 
 
 function formatJoinStatement(joinStatement){

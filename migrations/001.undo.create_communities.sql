@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS communities; 
+DROP TABLE IF EXISTS communities CASCADE; 

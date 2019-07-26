@@ -7,5 +7,5 @@ CREATE TABLE users (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL, 
   pic_url TEXT NOT NULL,  
-  age INTEGER NOT NULL
+  birth_date DATE NOT NULL
 );

@@ -4,6 +4,6 @@ INSERT INTO communities(communities_name)
 VALUES
     ('Green Dragons'), 
     ('Grodojo'), 
-    ('D. Root'),
+    ('Dragon Root'),
     ('Urban Arrows'), 
     ('Public');
