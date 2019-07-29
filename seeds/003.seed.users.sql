@@ -1,6 +1,6 @@
 TRUNCATE TABLE users RESTART IDENTITY CASCADE; 
 
-INSERT INTO users(first_name, last_name, pic_url, birth_date)
+INSERT INTO users(first_name, last_name, users_pic_url, birth_date)
 VALUES
 ('Mike', 'Cermak', 'http://bit.ly/2IfpyW9', '1980-09-01'),
 ('Ale', 'Cabrera-Mondragon', 'http://bit.ly/2QFZhUJ', '1994-06-01'),
