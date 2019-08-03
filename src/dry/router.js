@@ -10,8 +10,8 @@ const bodyParser = express.json()
 
 const properties = {
   communities: ['community_name'],
-  challenges: ['challenges_name', 'challenges_description', 'pic_url', 'units'],
-  users: ['first_name', 'last_name', 'pic_url', 'age'],
+  challenges: ['challenges_name', 'challenges_description', 'challenges_pic_url', 'units'],
+  users: ['first_name', 'last_name', 'birth_date', 'users_pic_url'],
 } 
 
 function formatJoinStatement(joinStatement){
@@ -143,11 +143,10 @@ router
   .route('/:table/POST')
   .post(bodyParser, (req, res, next) => {
     const {table} = req.params
-    logger.info('posting')
-    
+
     let newRow = {}
     Object.keys(req.body).map(key => {
-      if(req.body[key] === 'id'){
+      if(req.body[key] === `${table}_id`){
         return 
       } else {
         return newRow[key] = req.body[key]
