@@ -6,7 +6,5 @@ CREATE TABLE users_communities_challenges(
     communities_challenges_id INTEGER REFERENCES communities_challenges(communities_challenges_id) ON DELETE CASCADE NOT NULL,
     entry_date DATE NOT NULL, 
     record INTEGER,
-    stars INTEGER, 
-    dragon_bucks NUMERIC (7, 2), 
     notes TEXT 
-)
+);
