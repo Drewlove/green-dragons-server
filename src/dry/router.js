@@ -13,19 +13,10 @@ const properties = {
   communities: ['community_name'],
   users_sub_communities: ['users_id', 'sub_communities_id'],
   challenges: ['challenges_name', 'challenges_pic_url', 'units'],
- 
   communities_challenges: ['communities_id', 'challenges_id', 'communities_challenges_name', 'open_date', 'close_date', 'stars_one_minimum', 'stars_two_minimum', 'stars_three_minimum', 
   'stars_one_bucks', 'stars_two_bucks', 'stars_three_bucks'],
   users_communities_challenges: ['users_id', 'communities_challenges_id', 'entry_date', 'record']
 } 
-
-function formatJoinStatement(joinStatement){
-  return joinStatement.split('+').join(' ').replace(/STARTPARENS/g, '(').replace(/ENDPARENS/g, ')')
-}
-
-function formatWhereStatement(whereStatement){
-  return whereStatement.split('+').join(' ').replace('equals', '=')
-}
 
 function formatRawQuery(rawQuery){
   return rawQuery.split('&').join(' ')
@@ -77,72 +68,6 @@ router
     })
     .catch(next)
   })
-
-  router
-  .route('/:fromTable/getAllJoinOneTable/:joinStatement')
-  .get((req, res, next)=> {
-    const {fromTable, joinStatement} = req.params
-    const formattedJoinStatement = formatJoinStatement(joinStatement)
-    Service.getAllJoinOneTable(req.app.get('db'), fromTable, formattedJoinStatement)
-    .then(allRows => {
-      const sanitizedRows = allRows.map(rowObj => {
-        return sanitizeObj(rowObj)
-      })
-      res.json(sanitizedRows)
-    })
-    .catch(next)
-  })
-
-  router
-  .route('/:fromTable/getAllJoinTwoTables/:joinStatementOne/:joinStatementTwo/')
-  .get((req, res, next)=> {
-    const {fromTable, joinStatementOne, joinStatementTwo } = req.params
-    const formattedJoinStatementOne = formatJoinStatement(joinStatementOne)
-    const formattedJoinStatementTwo = formatJoinStatement(joinStatementTwo)
-    Service.getAllJoinTwoTables(req.app.get('db'), fromTable, formattedJoinStatementOne, formattedJoinStatementTwo)
-    .then(allRows => {
-      const sanitizedRows = allRows.map(rowObj => {
-        return sanitizeObj(rowObj)
-      })
-      res.json(sanitizedRows)
-    })
-    .catch(next)
-  })
-
-  router
-  .route('/:fromTable/getAllJoinTwoTablesById/:joinStatementOne/:joinStatementTwo/:whereStatement')
-  .get((req, res, next)=> {
-    const {fromTable, joinStatementOne, joinStatementTwo, whereStatement} = req.params
-    const formattedJoinStatementOne = formatJoinStatement(joinStatementOne)
-    const formattedJoinStatementTwo = formatJoinStatement(joinStatementTwo)
-    const formattedWhereStatement = formatWhereStatement(whereStatement)
-    Service.getAllJoinTwoTablesById(req.app.get('db'), fromTable, formattedJoinStatementOne, formattedJoinStatementTwo, formattedWhereStatement)
-    .then(allRows => {
-      const sanitizedRows = allRows.map(rowObj => {
-        return sanitizeObj(rowObj)
-      })
-      res.json(sanitizedRows)
-    })
-    .catch(next)
-  })
-
-
-
-  router
-  .route('/:table/getItemTemplate')
-  .get((req, res, next) => {
-    const {table} = req.params
-    Service.getItemTemplate(req.app.get('db'), table)
-    .then(columnNamesArrOfObjs => {
-      let emptyItemObj = [{}]
-      columnNamesArrOfObjs.map(key => {
-        emptyItemObj[0][key.column_name] = ''
-      })
-      res.json(emptyItemObj)
-    })
-    .catch(next)
-  })
-
 
   router
   .route('/:table/POST')
