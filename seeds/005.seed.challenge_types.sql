@@ -1,7 +1,7 @@
-TRUNCATE TABLE challenges RESTART IDENTITY CASCADE;  
+TRUNCATE TABLE challenge_types RESTART IDENTITY CASCADE;  
 
-INSERT INTO challenges 
-(challenges_name, challenges_pic_url,  units)
+INSERT INTO challenge_types
+(challenge_types_name, challenge_types_pic_url,  units)
 VALUES
 ('Jump Rope Challenge', 
 'http://bit.ly/2KhrH7h',

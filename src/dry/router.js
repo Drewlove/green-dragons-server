@@ -11,11 +11,12 @@ const bodyParser = express.json()
 const properties = {
   users: ['first_name', 'last_name', 'birth_date', 'users_pic_url'],
   communities: ['community_name'],
-  users_sub_communities: ['users_id', 'sub_communities_id'],
-  challenges: ['challenges_name', 'challenges_pic_url', 'units'],
-  communities_challenges: ['communities_id', 'challenges_id', 'communities_challenges_name', 'open_date', 'close_date', 'stars_one_minimum', 'stars_two_minimum', 'stars_three_minimum', 
-  'stars_one_bucks', 'stars_two_bucks', 'stars_three_bucks'],
-  users_communities_challenges: ['users_id', 'communities_challenges_id', 'entry_date', 'record']
+  sub_communities: ['communities_id', 'sub_communities_name' ],
+  users_sub_communities: ['users_id', 'sub_communities_id'], 
+  challenge_types: ['challenge_types_name', 'challenge_types_pic_url', 'units'],
+  challenge_instances: ['challenge_types_id', 'challenge_instances_name', 'challenge_instances_description', 'open_date' ,'close_date', 'stars_one_minimum', 'stars_two_minimum', 'stars_three_minimum', 'stars_one_bucks', 'stars_two_bucks', 'stars_three_bucks'],
+  challenge_instances_sub_communities: ['challenge_instances_id', 'sub_communities_id'],
+  users_challenge_instances: ['users_id', 'challenge_instances_id', 'entry_date', 'record']
 } 
 
 function formatRawQuery(rawQuery){

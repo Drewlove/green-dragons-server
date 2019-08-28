@@ -1,13 +1,7 @@
-TRUNCATE TABLE users_communities_challenges RESTART IDENTITY CASCADE; 
+TRUNCATE TABLE users_challenge_instances RESTART IDENTITY CASCADE; 
 
---('Jump Rope Challenge', 
--- ('Fitness Boxing',  
--- ('Archery Accuracy',  
--- ('1/2 Mile Run',
-
-
-INSERT INTO users_communities_challenges(
-    users_id, communities_challenges_id, entry_date, record, notes)
+INSERT INTO users_challenge_instances(
+    users_id, challenge_instances_id, entry_date, record, notes)
 VALUES
 (1, 4, '2019-07-01', 190, 'mike, public half mile'),
 (1, 4, '2019-07-08', 180, 'mike, public half mile'),
