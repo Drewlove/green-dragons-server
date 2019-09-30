@@ -7,6 +7,7 @@ BEGIN;
 \i /Users/Drew/Projects/A1-Review/capstone-server/seeds/006.seed.challenge_instances.sql
 \i /Users/Drew/Projects/A1-Review/capstone-server/seeds/007.seed.challenge_instances_sub_communities.sql
 \i /Users/Drew/Projects/A1-Review/capstone-server/seeds/008.seed.users_challenge_instances.sql
+\i /Users/Drew/Projects/A1-Review/capstone-server/seeds/009.seed.users_dragon_bucks.sql
 
 COMMIT; 
 

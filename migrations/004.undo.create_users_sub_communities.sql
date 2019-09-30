@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS users_communities; 
+DROP TABLE IF EXISTS users_sub_communities; 

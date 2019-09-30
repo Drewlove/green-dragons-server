@@ -6,6 +6,6 @@ CREATE TABLE users_challenge_instances(
     challenge_instances_id INTEGER REFERENCES challenge_instances(challenge_instances_id) ON DELETE CASCADE NOT NULL,
     entry_date DATE NOT NULL, 
     record INTEGER NOT NULL,
-    notes TEXT 
+    notes TEXT
 );
 

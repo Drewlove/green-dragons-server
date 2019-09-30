@@ -1,4 +1,4 @@
-//Refactor, getAll and join could be dried up, lots of repetitive code
+const logger = require('../logger')
 
 const Service = { 
   dynamicGet(knex, query, bindings){

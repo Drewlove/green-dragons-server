@@ -10,13 +10,14 @@ const bodyParser = express.json()
 
 const properties = {
   users: ['first_name', 'last_name', 'birth_date', 'users_pic_url'],
-  communities: ['community_name'],
+  communities: ['communities_name'],
   sub_communities: ['communities_id', 'sub_communities_name' ],
   users_sub_communities: ['users_id', 'sub_communities_id'], 
   challenge_types: ['challenge_types_name', 'challenge_types_pic_url', 'units'],
   challenge_instances: ['challenge_types_id', 'challenge_instances_name', 'challenge_instances_description', 'open_date' ,'close_date', 'stars_one_minimum', 'stars_two_minimum', 'stars_three_minimum', 'stars_one_bucks', 'stars_two_bucks', 'stars_three_bucks'],
   challenge_instances_sub_communities: ['challenge_instances_id', 'sub_communities_id'],
-  users_challenge_instances: ['users_id', 'challenge_instances_id', 'entry_date', 'record']
+  users_challenge_instances: ['users_id', 'challenge_instances_id', 'entry_date', 'record'],
+  users_dragon_bucks: ['users_id', 'dragon_bucks']
 } 
 
 function formatRawQuery(rawQuery){
@@ -106,6 +107,7 @@ router
           .status(201)
           .location(path.posix.join(req.originalUrl, `${row.id}`))
           .json(sanitizeObj(row))
+
       })
       .catch(next)
   })   
@@ -155,14 +157,15 @@ router
     const {table} = req.params
     let updatedRow = {}
     Object.keys(req.body).map(key => {
-      if(properties[table].indexOf(key) !== -1){
-        updatedRow[key] = req.body[key]
-      }
+      updatedRow[key] = req.body[key]
+      // if(properties[table].indexOf(key) !== -1){
+      //   updatedRow[key] = req.body[key]
+      // }
     })
 
     let keysMissingValues = []; 
     Object.keys(updatedRow).map(key => {
-      if(updatedRow[key] === ''){
+      if(updatedRow[key] === '' && properties[table].indexOf(key) !== -1){
         keysMissingValues.push(key)
       }
     })
@@ -170,7 +173,7 @@ router
 
     if (keysMissingValues.length > 0) {
       logger.error(`Method: PATCH, Status: Invalid, 
-      Error Description: table: '${table}', missing values for: ${keysMissingValues}`)
+      Error Description: table: '${table}', missing NOT NULL value for: ${keysMissingValues}`)
       return res.status(400).json({
         error: {
           message: `Request body must contain either ${properties[table]}`
