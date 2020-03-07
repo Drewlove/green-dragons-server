@@ -9,16 +9,14 @@ const bodyParser = express.json()
 
 
 const properties = {
-  users: ['first_name', 'last_name', 'birth_date', 'users_pic_url'],
+  users: ['first_name', 'last_name', 'birth_date'],
   communities: ['communities_name'],
   sub_communities: ['communities_id', 'sub_communities_name' ],
-  users_sub_communities: ['users_id', 'sub_communities_id'], 
-  challenge_types: ['challenge_types_name', 'challenge_types_pic_url', 'units'],
-  challenge_instances: ['challenge_types_id', 'challenge_instances_name', 'challenge_instances_description', 'open_date' ,'close_date', 'stars_one_minimum', 'stars_two_minimum', 'stars_three_minimum', 'stars_one_bucks', 'stars_two_bucks', 'stars_three_bucks'],
-  challenge_instances_sub_communities: ['challenge_instances_id', 'sub_communities_id'],
-  users_challenge_instances: ['users_id', 'challenge_instances_id', 'entry_date', 'record'],
+  users_sub_communities: ['users_id', 'sub_communities_id'],
+  challenge_types: ['challenge_types_name', 'challenge_types_description', 'challenge_types_best_record', 'units'],
+  users_challenge_instances: ['users_id', 'challenge_types_id', 'entry_date', 'record'],
   users_dragon_bucks: ['users_id', 'dragon_bucks']
-} 
+}
 
 function formatRawQuery(rawQuery){
   return rawQuery.split('&').join(' ')
@@ -29,7 +27,7 @@ function formatRawQuery(rawQuery){
 function formatRawBindings(rawBindings){
   return rawBindings
   .replace(/OPEN/gi, '(')
-  .replace(/CLOSE/g, ')') 
+  .replace(/CLOSE/g, ')')
   .split('&')
 }
 
@@ -61,7 +59,7 @@ router
   .route('/:table')
   .get((req, res, next) => {
     const {table} = req.params
-    Service.getAll(req.app.get('db'), table) 
+    Service.getAll(req.app.get('db'), table)
     .then(allRows => {
       const sanitizedRows = allRows.map(rowObj => {
         return sanitizeObj(rowObj)
@@ -79,7 +77,7 @@ router
     let newRow = {}
     Object.keys(req.body).map(key => {
       if(req.body[key] === `${table}_id`){
-        return 
+        return
       } else {
         return newRow[key] = req.body[key]
       }
@@ -93,7 +91,7 @@ router
         })
       }
     }
-    
+
     logger.info(`New row for table ${table}: ${Object.entries(newRow)}`)
 
     Service.insertRow(
@@ -110,8 +108,8 @@ router
 
       })
       .catch(next)
-  })   
- 
+  })
+
 router
   .route('/:table/:serviceMethod/:row_id')
 
@@ -121,7 +119,7 @@ router
     Service.getById(req.app.get('db'), table, row_id)
       .then(row => {
         if (!row) {
-          logger.error(`Method: ALL, Status: Invalid, 
+          logger.error(`Method: ALL, Status: Invalid,
           Error Description: Table '${table}' with id '${row_id}' not found.`)
           return res.status(404).json({
             error: { message: `Table ${table}: Row Not Found` }
@@ -140,13 +138,13 @@ router
   .delete((req, res, next) => {
     const {row_id } = req.params
     const {table} = req.params
-    Service.deleteRow( 
+    Service.deleteRow(
       req.app.get('db'),
-      table, 
+      table,
       row_id
     )
       .then(numRowsAffected => {
-        logger.info(`Method: DELETE, Status: Valid, 
+        logger.info(`Method: DELETE, Status: Valid,
         Update: Table '${table}': with id '${row_id}' deleted.`)
         res.status(204).end()
       })
@@ -163,7 +161,7 @@ router
       // }
     })
 
-    let keysMissingValues = []; 
+    let keysMissingValues = [];
     Object.keys(updatedRow).map(key => {
       if(updatedRow[key] === '' && properties[table].indexOf(key) !== -1){
         keysMissingValues.push(key)
@@ -172,7 +170,7 @@ router
 
 
     if (keysMissingValues.length > 0) {
-      logger.error(`Method: PATCH, Status: Invalid, 
+      logger.error(`Method: PATCH, Status: Invalid,
       Error Description: table: '${table}', missing NOT NULL value for: ${keysMissingValues}`)
       return res.status(400).json({
         error: {
@@ -187,7 +185,7 @@ router
 
     Service.updateRow(
       req.app.get('db'),
-      table, 
+      table,
       req.params.row_id,
       updatedRow
     )
